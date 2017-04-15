@@ -26,7 +26,14 @@ var people []Person
 
 
 func GetPersonEndPoint(w http.ResponseWriter, req * http.Request){
-
+	params := mux.Vars(req)
+	for _, item := range people {
+		if item.ID == params["ID"]{
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode(&Person{})
 }
 
 
@@ -49,7 +56,7 @@ func main(){
 	people = append(people, Person{ID: "1", FirstName: "Somename", LastName:"RandomName", Address:
 	&Address{City: "Some city", State: "Somestate"}})
 	log.Fatal(http.ListenAndServe(":8080", router))
-	router.HandleFunc("/people" , GetPeopleEndPoint).Methods("GET")
+	router.HandleFunc("/people/" , GetPeopleEndPoint).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPersonEndPoint).Methods("GET")
 	router.HandleFunc("/people/{id}", CreatePersonEndPoint).Methods("POST")
 	router.HandleFunc("/people/{id}", DeletePersonEndPoint).Methods("DELETE")
